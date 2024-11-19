@@ -1,9 +1,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-void get_next_message(char const **message)
+// Get the next message from e.g. a file.
+// Getting a message might fail for some reason and there might be no message available.
+bool get_next_message(char const **message)
 {
-    // Of course we should add a null check for message here
+    if (message == NULL)
+    {
+        return false;
+    }
+
     // Simulate some logic which tells if there is a message available
     static bool message_available = true;
 
@@ -16,9 +22,11 @@ void get_next_message(char const **message)
     }
     else
     {
-        // Oops missing `*` here -> causes infinite loop in main
+        // Oops missing `*` here -> Leads to infinite loop in `main`
         message = NULL;
     }
+
+    return true;
 }
 
 int main(void)
@@ -27,15 +35,22 @@ int main(void)
 
     do
     {
-        get_next_message(&message);
-
-        if (message != NULL)
+        if (get_next_message(&message))
         {
-            printf("Message: %s\n", message);
+            if (message != NULL)
+            {
+                printf("Message: %s\n", message);
+            }
+            else
+            {
+                printf("No message available\n");
+                break;
+            }
         }
         else
         {
-            printf("No message available\n");
+            printf("Error: get_next_message() failed\n");
+            return 1;
         }
     } while (message != NULL);
 
